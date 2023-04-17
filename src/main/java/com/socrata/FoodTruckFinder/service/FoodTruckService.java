@@ -14,7 +14,7 @@ public class FoodTruckService implements SocrataService {
     private static final String BASE_URL = "http://data.sfgov.org/resource/bbb8-hzi6.json?";
     private final com.socrata.FoodTruckFinder.service.RestClientService service;
 
-    FoodTruckService(RestClientService service) {
+    public FoodTruckService(RestClientService service) {
         this.service = service;
     }
 
@@ -33,12 +33,14 @@ public class FoodTruckService implements SocrataService {
     public String buildServiceQuery(ZonedDateTime currentUserTime, int page, int pageSize) {
         // Note: Socrata API Sunday = 0, java.time Sunday = 7
         int dayOfWeek = currentUserTime.getDayOfWeek().getValue() % 7;
-        return BASE_URL +
-                "dayorder=" + dayOfWeek +
-                "&$order=applicant ASC" +
-                "&$offset=" + page +
-                "&$limit=" + pageSize +
-                "&$where=" + getHourQuery(currentUserTime);
+
+        return new StringBuilder(BASE_URL)
+            .append("dayorder=").append(dayOfWeek)
+            .append("&$order=applicant ASC")
+            .append("&$offset=").append(page)
+            .append("&$limit=").append(pageSize)
+            .append("&$where=").append(getHourQuery(currentUserTime))
+            .toString();
     }
 
     private String getHourQuery(ZonedDateTime localDateTime) {
